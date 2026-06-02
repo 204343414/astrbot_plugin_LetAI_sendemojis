@@ -314,7 +314,7 @@ class LetAISendEmojisPlugin(Star):
     async def test_download_command(self, event: AstrMessageEvent):
         """测试表情包下载功能"""
         if not self.emoji_data:
-            return event.plain_result("表情包数据为空")
+            return event.text_result("表情包数据为空")
         
         # 随机选择一个表情包进行测试
         import random
@@ -324,9 +324,9 @@ class LetAISendEmojisPlugin(Star):
         success = await self.download_single_emoji(test_emoji)
         
         if success:
-            return event.plain_result(f"✅ 下载测试成功: {test_emoji.get('name')}")
+            return event.text_result(f"✅ 下载测试成功: {test_emoji.get('name')}")
         else:
-            return event.plain_result(f"❌ 下载测试失败: {test_emoji.get('name')}")
+            return event.text_result(f"❌ 下载测试失败: {test_emoji.get('name')}")
     
     @filter.command("查看缓存信息", "check_cache_info")
     async def check_cache_info(self, event: AstrMessageEvent):
@@ -334,7 +334,7 @@ class LetAISendEmojisPlugin(Star):
         cache_file = os.path.join(self.emoji_directory, "emoji_cache.json")
         
         if not os.path.exists(cache_file):
-            return event.plain_result("❌ 缓存文件不存在")
+            return event.text_result("❌ 缓存文件不存在")
         
         try:
             with open(cache_file, 'r', encoding='utf-8') as f:
@@ -360,12 +360,12 @@ class LetAISendEmojisPlugin(Star):
 - 按分类自动存储到本地目录
 - 逐步建立精准的本地表情包库"""
                 
-                return event.plain_result(info_text)
+                return event.text_result(info_text)
             else:
-                return event.plain_result("⚠️ 旧格式缓存文件，建议重新加载插件更新格式")
+                return event.text_result("⚠️ 旧格式缓存文件，建议重新加载插件更新格式")
                 
         except Exception as e:
-            return event.plain_result(f"❌ 读取缓存失败: {e}")
+            return event.text_result(f"❌ 读取缓存失败: {e}")
     
     @filter.command("清理本地表情包", "clear_local_emojis")
     async def clear_local_emojis_command(self, event: AstrMessageEvent):
@@ -383,19 +383,19 @@ class LetAISendEmojisPlugin(Star):
                 shutil.rmtree(self.emoji_directory)
                 logger.info(f"已清理本地表情包目录: {self.emoji_directory}")
                 
-                return event.plain_result(f"✅ 已清理 {file_count} 个本地表情包文件\n\n📥 下次AI发送表情包时将重新按需下载")
+                return event.text_result(f"✅ 已清理 {file_count} 个本地表情包文件\n\n📥 下次AI发送表情包时将重新按需下载")
             else:
-                return event.plain_result("💭 本地表情包目录不存在，无需清理")
+                return event.text_result("💭 本地表情包目录不存在，无需清理")
                 
         except Exception as e:
             logger.error(f"清理本地表情包失败: {e}")
-            return event.plain_result(f"❌ 清理失败: {e}")
+            return event.text_result(f"❌ 清理失败: {e}")
     
     @filter.command("查看使用历史", "check_usage_history")
     async def check_usage_history(self, event: AstrMessageEvent):
         """查看表情包使用历史"""
         if not self.recent_used_emojis:
-            return event.plain_result("表情包使用历史为空")
+            return event.text_result("表情包使用历史为空")
         
         history_text = "最近使用的表情包:\n\n"
         for i, emoji_id in enumerate(self.recent_used_emojis, 1):
@@ -403,7 +403,7 @@ class LetAISendEmojisPlugin(Star):
         
         history_text += f"\n当前记录 {len(self.recent_used_emojis)}/{self.max_recent_history} 个，避免短期重复使用"
         
-        return event.plain_result(history_text)
+        return event.text_result(history_text)
     
     @filter.command("清空使用历史", "clear_usage_history")
     async def clear_usage_history(self, event: AstrMessageEvent):
@@ -411,13 +411,13 @@ class LetAISendEmojisPlugin(Star):
         history_count = len(self.recent_used_emojis)
         self.recent_used_emojis.clear()
         logger.info("已清空表情包使用历史")
-        return event.plain_result(f"✅ 已清空 {history_count} 条使用历史记录\n\n🔄 现在可以重新使用之前的表情包了")
+        return event.text_result(f"✅ 已清空 {history_count} 条使用历史记录\n\n🔄 现在可以重新使用之前的表情包了")
     
     @filter.command("表情包统计", "emoji_stats")
     async def emoji_stats(self, event: AstrMessageEvent):
         """查看表情包统计信息"""
         if not self.emoji_data:
-            return event.plain_result("❌ 表情包数据为空")
+            return event.text_result("❌ 表情包数据为空")
         
         total_count = len(self.emoji_data)
         downloaded_count = 0
@@ -453,7 +453,7 @@ class LetAISendEmojisPlugin(Star):
 - 本地不足5个时强制下载
 - 优先选择未使用过的表情包"""
         
-        return event.plain_result(stats_text)
+        return event.text_result(stats_text)
     
     @filter.command("查看AI情感状态", "check_ai_mood")
     async def check_ai_mood(self, event: AstrMessageEvent):
@@ -486,7 +486,7 @@ class LetAISendEmojisPlugin(Star):
 - 短时间内避免重复发送
 - 根据用户情感进行智能响应"""
         
-        return event.plain_result(mood_text)
+        return event.text_result(mood_text)
     
     @filter.command("重置AI情感", "reset_ai_mood")
     async def reset_ai_mood(self, event: AstrMessageEvent):
@@ -498,7 +498,7 @@ class LetAISendEmojisPlugin(Star):
         self.conversation_context.clear()
         
         logger.info("AI情感状态已重置")
-        return event.plain_result(f"""🔄 AI情感状态重置完成:
+        return event.text_result(f"""🔄 AI情感状态重置完成:
 
 📊 重置前状态:
    - AI情绪: {old_mood}
@@ -515,7 +515,7 @@ class LetAISendEmojisPlugin(Star):
         """调整AI情感一致性系数"""
         args = event.get_message().get_plain_text().split()
         if len(args) < 2:
-            return event.plain_result(f"""💡 当前情感一致性系数: {self.mood_consistency_factor}
+            return event.text_result(f"""💡 当前情感一致性系数: {self.mood_consistency_factor}
 
 🔧 使用方法: 调整情感一致性 <数值>
    数值范围: 0.1-1.0
@@ -531,7 +531,7 @@ class LetAISendEmojisPlugin(Star):
                 old_factor = self.mood_consistency_factor
                 self.mood_consistency_factor = new_factor
                 logger.info(f"情感一致性系数调整: {old_factor} -> {new_factor}")
-                return event.plain_result(f"""✅ 情感一致性系数调整成功:
+                return event.text_result(f"""✅ 情感一致性系数调整成功:
 
 📊 调整详情:
    - 原数值: {old_factor}
@@ -540,9 +540,9 @@ class LetAISendEmojisPlugin(Star):
 🎭 效果说明:
    {'AI情感会更加稳定，较少出现突然的情感变化' if new_factor > 0.7 else 'AI情感会更加活跃，容易根据对话内容变化' if new_factor < 0.5 else 'AI情感保持平衡状态'}""")
             else:
-                return event.plain_result("❌ 数值超出范围，请输入0.1-1.0之间的数值")
+                return event.text_result("❌ 数值超出范围，请输入0.1-1.0之间的数值")
         except ValueError:
-            return event.plain_result("❌ 请输入有效的数字")
+            return event.text_result("❌ 请输入有效的数字")
     
     async def download_single_emoji(self, emoji):
         """立即下载单个表情包"""
@@ -629,24 +629,74 @@ class LetAISendEmojisPlugin(Star):
                 asyncio.create_task(self.send_emoji_separately(event, selected_emoji))
     
     async def send_emoji_separately(self, event: AstrMessageEvent, selected_emoji):
-        """单独发送表情包"""
+        """单独发送表情包，尝试用sub_type=1让图片以表情包形式显示"""
         try:
             local_path = selected_emoji.get("local_path")
             
-            # 检查本地文件是否存在（搜索时应该已经确保下载了）
-            if local_path and os.path.exists(local_path):
-                logger.info(f"发送二次元表情包: {selected_emoji.get('name')}")
-                # 使用正确的消息链API发送图片
-                message_chain = MessageChain([Image(file=local_path)])
-                await event.send(message_chain)
-                logger.info(f"表情包发送成功: {selected_emoji.get('name')}")
-            else:
-                # 如果搜索方法返回了表情包但本地文件不存在，说明有问题
+            if not local_path or not os.path.exists(local_path):
                 logger.error(f"表情包本地文件不存在: {selected_emoji.get('name')} - {local_path}")
                 logger.warning("跳过表情包发送")
+                return
+            
+            logger.info(f"发送二次元表情包: {selected_emoji.get('name')}")
+            
+            # 尝试通过底层API发送带sub_type的图片（仅aiocqhttp平台）
+            sent = False
+            if event.get_platform_name() == "aiocqhttp":
+                try:
+                    sent = await self._send_emoji_via_raw_api(event, local_path)
+                except Exception as e:
+                    logger.warning(f"底层API发送失败，回退到普通方式: {e}")
+                    sent = False
+            
+            # 回退：普通方式发送
+            if not sent:
+                message_chain = MessageChain([Image(file=local_path)])
+                await event.send(message_chain)
+            
+            logger.info(f"表情包发送成功: {selected_emoji.get('name')}")
                     
         except Exception as e:
             logger.error(f"发送表情包失败: {selected_emoji.get('name')} - {e}")
+    
+    async def _send_emoji_via_raw_api(self, event: AstrMessageEvent, local_path: str) -> bool:
+        """通过aiocqhttp底层API发送带sub_type=1的图片消息"""
+        from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+        
+        if not isinstance(event, AiocqhttpMessageEvent):
+            return False
+        
+        client = event.bot
+        
+        # 构造带sub_type的image消息段
+        # file字段用file:///绝对路径 或 base64
+        file_uri = f"file:///{os.path.abspath(local_path)}"
+        
+        message = [{
+            "type": "image",
+            "data": {
+                "file": file_uri,
+                "sub_type": "1",       # 1 = 表情包/贴图模式
+                "summary": "[表情]"    # QQ里显示的摘要文本
+            }
+        }]
+        
+        # 判断是群聊还是私聊
+        msg_obj = event.message_obj
+        if msg_obj.group_id:
+            payloads = {
+                "group_id": int(msg_obj.group_id),
+                "message": message
+            }
+            await client.api.call_action('send_group_msg', **payloads)
+        else:
+            payloads = {
+                "user_id": int(msg_obj.sender.user_id if hasattr(msg_obj.sender, 'user_id') else msg_obj.session_id),
+                "message": message
+            }
+            await client.api.call_action('send_private_msg', **payloads)
+        
+        return True
     
     def analyze_ai_reply_emotion(self, ai_reply: str):
         """深度分析AI回复的情感和内容，返回精准的情感标签"""
